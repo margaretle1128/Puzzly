@@ -3,7 +3,9 @@ package com.fifteenpuzzlegame.fifteenpuzzlegame.controllers;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.fifteenpuzzlegame.fifteenpuzzlegame.models.User;
@@ -13,12 +15,16 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Controller
+@RestController
+@RequestMapping("/api/v1") 
+@CrossOrigin(origins ="http://localhost:3000")
 public class UsersController {
-    
+
     @Autowired
     private UserRepository userRepo;
 
@@ -33,4 +39,15 @@ public class UsersController {
         return "user/addedUser";
     }
     
+    List<User> users = Arrays.asList(
+        new User("Alice", 10, 120, 4),
+        new User("Bob", 15, 180, 5),
+        new User("Charlie", 20, 200, 6)
+    );
+
+
+    @GetMapping("/users/samples")
+    public ResponseEntity<List<User>> getSampleUsers() {
+        return ResponseEntity.ok(users);
+    }
 }
