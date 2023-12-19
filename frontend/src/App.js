@@ -18,19 +18,47 @@ function App() {
     getData();
   }, []);
 
+  const [showModal, setShowModal] = useState(false);
+  const [boardSize, setBoardSize] = useState(null);
+
+  const handleNewGameClick = () => {
+    setShowModal(true);
+  };
+
+  const selectBoardSize = (size) => {
+    setBoardSize(size);
+    setShowModal(false);
+    // Start game with selected board size
+  };
+
+  const handleLeaderboardClick = () => {
+    // Logic for showing the leaderboard
+  };
+
+  const handleSettingsClick = () => {
+    // Logic for showing settings
+  };
+
   return (
     <div className="App">
-      <h1>Hello world!</h1>
-      <div>
-        Sample Users:
-        <ul>
-          {sampleJson.map((user, index) => (
-            <li key={index}>
-              {user.name}, Moves: {user.move}, Time: {user.time}, Size: {user.size}
-            </li>
-          ))}
-        </ul>
+      <h1>Welcome to the Puzzle Game</h1>
+      <div className="menu">
+        <button onClick={handleNewGameClick}>New Game</button>
+        <button onClick={handleLeaderboardClick}>Leaderboard</button>
+        <button onClick={handleSettingsClick}>Settings</button>
       </div>
+
+      {showModal && (
+        <div className="modal">
+          <h2>Select Board Size</h2>
+          {[3, 4, 5, 6].map((size) => (
+            <button key={size} onClick={() => selectBoardSize(size)}>
+              {size}x{size}
+            </button>
+          ))}
+          <button onClick={() => setShowModal(false)}>Cancel</button>
+        </div>
+      )}
     </div>
   );
 }
