@@ -13,6 +13,9 @@ function App() {
   const [timer, setTimer] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
   const [moveCount, setMoveCount] = useState(0);
+  const [userName, setUserName] = useState('');
+  const [showSavePopup, setShowSavePopup] = useState(false);
+  const [isTimerActive, setIsTimerActive] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -49,6 +52,8 @@ function App() {
     try {
       const { data: newPuzzle } = await axios.get(`http://localhost:8084/api/v1/puzzle/new?size=${size}`);
       console.log(newPuzzle);
+      setTimer(0);
+      setMoveCount(0);
       setPuzzle(newPuzzle);
       setGameStarted(true);
     } catch (error) {
@@ -58,6 +63,10 @@ function App() {
 
   /*----------------------------- SWAP TILES -----------------------------*/
   const handleTileClick = (tile, rowIndex, tileIndex) => {
+    // If the puzzle is already solved, prevent any further moves
+    if (showSolvedPopup) {
+      return;
+    }
 
     // Function to find empty tile
     const findEmptyTile = (puzzle) => {
@@ -105,23 +114,31 @@ function App() {
       const newPuzzle = swapTiles(puzzle, { row: rowIndex, column: tileIndex }, emptyTilePos);
       setPuzzle(newPuzzle);
       setMoveCount(prev => prev + 1);
+
       if (isSolved(newPuzzle)) {
         setShowSolvedPopup(true);
+        setIsTimerActive(false);
       }
     }
   };
 
   /*----------------------------- TIMER -----------------------------*/
   useEffect(() => {
-    if (gameStarted) {
-      const id = setInterval(() => {
-        setTimer(prev => prev + 1);
+    let timerId;
+    if (isTimerActive) {
+      timerId = setInterval(() => {
+        setTimer((prevTimer) => prevTimer + 1);
       }, 1000);
-      setIntervalId(id);
-    } else {
-      clearInterval(intervalId);
-      setTimer(0);
-      setMoveCount(0);
+    } else if (timerId) {
+      clearInterval(timerId);
+    }
+  
+    return () => clearInterval(timerId);
+  }, [isTimerActive]);
+
+  useEffect(() => {
+    if (gameStarted) {
+      setIsTimerActive(true);
     }
   }, [gameStarted]);
 
@@ -130,6 +147,23 @@ function App() {
     const minutes = Math.floor((timer % 3600) / 60);
     const seconds = timer % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  /*----------------------------- SAVE RECORD -----------------------------*/
+  const saveRecord = async () => {
+    try {
+      await axios.post('http://localhost:8084/api/v1/users/add', {
+        name: userName,
+        move: moveCount,
+        time: timer,
+        size: boardSize
+      });
+      alert('Record saved successfully');
+      setShowSavePopup(false);
+      setGameStarted(false);
+    } catch (error) {
+      console.error('Error saving record: ', error);
+    }
   };
 
   return (
@@ -192,10 +226,25 @@ function App() {
             {showSolvedPopup && (
               <div className="solved-popup bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
                 <p>Congratulations! You solved the puzzle.</p>
+                <p>Time: {formatTime()}</p>
+                <p>Moves: {moveCount}</p>
+                <button onClick={() => setShowSavePopup(true)}>Save Record</button>
                 <button onClick={() => {
                   setShowSolvedPopup(false);
                   setGameStarted(false);
                 }}>Close</button>
+              </div>
+            )}
+            {showSavePopup && (
+              <div>
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                />
+                <button onClick={saveRecord}>Save</button>
+                <button onClick={() => setShowSavePopup(false)}>Cancel</button>
               </div>
             )}
           </div>

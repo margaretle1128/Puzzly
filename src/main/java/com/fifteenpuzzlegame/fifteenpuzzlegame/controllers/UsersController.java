@@ -3,6 +3,7 @@ package com.fifteenpuzzlegame.fifteenpuzzlegame.controllers;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,14 +30,9 @@ public class UsersController {
     private UserRepository userRepo;
 
     @PostMapping("/users/add")
-    public String addUser(@RequestParam Map<String, String> newuser, HttpServletResponse response) {
-        String newName = newuser.get("name");
-        int newSize = Integer.parseInt(newuser.get("size"));
-        int newTime = Integer.parseInt(newuser.get("time"));
-        int newMove = Integer.parseInt(newuser.get("move"));
-        userRepo.save(new User(newName, newMove, newTime, newSize));
-        response.setStatus(201);
-        return "user/addedUser";
+    public ResponseEntity<User> addUser(@RequestBody User newUser) {
+        userRepo.save(newUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
     
     List<User> users = Arrays.asList(
