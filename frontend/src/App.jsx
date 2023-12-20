@@ -3,9 +3,15 @@ import './App.css';
 import axios from "axios";
 
 function App() {
-  // Test conenction
+  // State variables
   const [sampleJson, setSampleJson] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [boardSize, setBoardSize] = useState(null);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [puzzle, setPuzzle] = useState([]);
+  const [showSolvedPopup, setShowSolvedPopup] = useState(false);
 
+  // Fetch initial data
   useEffect(() => {
     const getData = async () => {
       try {
@@ -19,16 +25,21 @@ function App() {
     getData();
   }, []);
 
-  const [showModal, setShowModal] = useState(false);
-  const [boardSize, setBoardSize] = useState(null);
-
+  // Handlers for game actions
   const handleNewGameClick = () => {
+    setShowSolvedPopup(false);
     setShowModal(true);
   };
+  const handleLeaderboardClick = () => { /* logic for leaderboard */ };
+  const handleSettingsClick = () => { /* logic for settings */ };
+  const handleReturnToMenu = () => {
+    setGameStarted(false);
+    setPuzzle([]);
+    setBoardSize(null);
+    setShowSolvedPopup(false);
+  };
 
-  const [gameStarted, setGameStarted] = useState(false);
-  const [puzzle, setPuzzle] = useState([]);
-
+  // Select board size and start the game
   const selectBoardSize = async (size) => {
     setBoardSize(size);
     setShowModal(false);
@@ -42,18 +53,58 @@ function App() {
     }
   };
 
-  const handleLeaderboardClick = () => {
-    // Logic for showing the leaderboard
-  };
+  // Swap titles
+  const handleTileClick = (tile, rowIndex, tileIndex) => {
 
-  const handleSettingsClick = () => {
-    // Logic for showing settings
-  };
+    // Function to file empty tile
+    const findEmptyTile = (puzzle) => {
+      for (let r = 0; r < puzzle.length; r++) {
+        for (let c = 0; c < puzzle[r].length; c++) {
+          if (puzzle[r][c] === 0) return { r, c };
+        }
+      }
+      return null;
+    };
+  
+    // Check if a move is valid and adjacent to the empty space
+    const isValidMove = (tilePos, emptyPos) => {
+      return (
+        (tilePos.row === emptyPos.r && Math.abs(tilePos.column - emptyPos.c) === 1) ||
+        (tilePos.column === emptyPos.c && Math.abs(tilePos.row - emptyPos.r) === 1)
+      );
+    };
 
-  const handleReturnToMenu = () => {
-    setGameStarted(false);
-    setPuzzle([]);
-    setBoardSize(null);
+    // Swap the clicked tile with the empty space
+    const swapTiles = (puzzle, fromPos, toPos) => {
+      const newPuzzle = puzzle.map(row => [...row]);
+      newPuzzle[toPos.r][toPos.c] = newPuzzle[fromPos.row][fromPos.column];
+      newPuzzle[fromPos.row][fromPos.column] = 0;
+      return newPuzzle;
+    };
+
+    // Function to check if the puzzle is solved
+    const isSolved = (puzzle) => {
+      let number = 1;
+      for (let i = 0; i < puzzle.length; i++) {
+        for (let j = 0; j < puzzle[i].length; j++) {
+          if (puzzle[i][j] !== number && !(i === puzzle.length - 1 && j === puzzle[i].length - 1)) {
+            return false;
+          }
+          if (number === puzzle.length * puzzle[i].length - 1) return true; // Last number reached
+          number++;
+        }
+      }
+      return true;
+    };
+
+    const emptyTilePos = findEmptyTile(puzzle);
+    if (isValidMove({ row: rowIndex, column: tileIndex }, emptyTilePos)) {
+      const newPuzzle = swapTiles(puzzle, { row: rowIndex, column: tileIndex }, emptyTilePos);
+      setPuzzle(newPuzzle);
+      if (isSolved(newPuzzle)) {
+        setShowSolvedPopup(true);
+      }
+    }
   };
 
   return (
@@ -100,12 +151,22 @@ function App() {
                     className={`border-2 border-gray-400 w-12 h-12 flex justify-center items-center m-1 ${
                       tile === 0 ? 'bg-white' : 'bg-blue-500 text-white'
                     }`}
+                    onClick={() => handleTileClick(tile, rowIndex, tileIndex)}
                   >
                     {tile !== 0 ? tile : ''}
                   </div>
                 ))}
               </div>
             ))}
+            {showSolvedPopup && (
+              <div className="solved-popup bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
+                <p>Congratulations! You solved the puzzle.</p>
+                <button onClick={() => {
+                  setShowSolvedPopup(false);
+                  setGameStarted(false); // Return to main menu
+                }}>Close</button>
+              </div>
+            )}
           </div>
         </div>
       )}
