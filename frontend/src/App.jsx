@@ -3,13 +3,16 @@ import './App.css';
 import axios from "axios";
 
 function App() {
-  // State variables
+  /*----------------------------- STATE VARIABLES -----------------------------*/
   const [sampleJson, setSampleJson] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [boardSize, setBoardSize] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [puzzle, setPuzzle] = useState([]);
   const [showSolvedPopup, setShowSolvedPopup] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
+  const [moveCount, setMoveCount] = useState(0);
 
   // Fetch initial data
   useEffect(() => {
@@ -25,7 +28,7 @@ function App() {
     getData();
   }, []);
 
-  // Handlers for game actions
+  /*----------------------------- HANDLERS FOR GAME ACTIONS -----------------------------*/
   const handleNewGameClick = () => {
     setShowSolvedPopup(false);
     setShowModal(true);
@@ -39,7 +42,7 @@ function App() {
     setShowSolvedPopup(false);
   };
 
-  // Select board size and start the game
+  /*----------------------------- SELECT BOARD SIZE -----------------------------*/
   const selectBoardSize = async (size) => {
     setBoardSize(size);
     setShowModal(false);
@@ -53,10 +56,10 @@ function App() {
     }
   };
 
-  // Swap titles
+  /*----------------------------- SWAP TILES -----------------------------*/
   const handleTileClick = (tile, rowIndex, tileIndex) => {
 
-    // Function to file empty tile
+    // Function to find empty tile
     const findEmptyTile = (puzzle) => {
       for (let r = 0; r < puzzle.length; r++) {
         for (let c = 0; c < puzzle[r].length; c++) {
@@ -101,10 +104,32 @@ function App() {
     if (isValidMove({ row: rowIndex, column: tileIndex }, emptyTilePos)) {
       const newPuzzle = swapTiles(puzzle, { row: rowIndex, column: tileIndex }, emptyTilePos);
       setPuzzle(newPuzzle);
+      setMoveCount(prev => prev + 1);
       if (isSolved(newPuzzle)) {
         setShowSolvedPopup(true);
       }
     }
+  };
+
+  /*----------------------------- TIMER -----------------------------*/
+  useEffect(() => {
+    if (gameStarted) {
+      const id = setInterval(() => {
+        setTimer(prev => prev + 1);
+      }, 1000);
+      setIntervalId(id);
+    } else {
+      clearInterval(intervalId);
+      setTimer(0);
+      setMoveCount(0);
+    }
+  }, [gameStarted]);
+
+  const formatTime = () => {
+    const hours = Math.floor(timer / 3600);
+    const minutes = Math.floor((timer % 3600) / 60);
+    const seconds = timer % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -142,6 +167,12 @@ function App() {
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
             Return to Main Menu
           </button>
+          <div className="timer-display">
+            Time Elapsed: {formatTime()}
+          </div>
+          <div className="move-count">
+            Moves: {moveCount}
+          </div>
           <div className="game-board">
             {puzzle.map((row, rowIndex) => (
               <div key={rowIndex} className="flex justify-center mb-2">
@@ -163,7 +194,7 @@ function App() {
                 <p>Congratulations! You solved the puzzle.</p>
                 <button onClick={() => {
                   setShowSolvedPopup(false);
-                  setGameStarted(false); // Return to main menu
+                  setGameStarted(false);
                 }}>Close</button>
               </div>
             )}
