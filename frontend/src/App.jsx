@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './App.css';
 import axios from "axios";
+import LeaderBoard from "./components/LeaderBoard";
 
 function App() {
   /*----------------------------- STATE VARIABLES -----------------------------*/
@@ -16,6 +17,9 @@ function App() {
   const [userName, setUserName] = useState('');
   const [showSavePopup, setShowSavePopup] = useState(false);
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false); 
+  const [solution, setSolution] = useState([]);
+  const [difficulty, setDifficulty] = useState('easy');
 
   // Fetch initial data
   useEffect(() => {
@@ -36,25 +40,31 @@ function App() {
     setShowSolvedPopup(false);
     setShowModal(true);
   };
-  const handleLeaderboardClick = () => { /* logic for leaderboard */ };
+
+  const handleLeaderboardClick = () => {
+    setShowLeaderboard(true); 
+  };
+
   const handleSettingsClick = () => { /* logic for settings */ };
+
   const handleReturnToMenu = () => {
+    setShowLeaderboard(false);
     setGameStarted(false);
     setPuzzle([]);
     setBoardSize(null);
     setShowSolvedPopup(false);
+    setSolution([]);
   };
 
-  /*----------------------------- SELECT BOARD SIZE -----------------------------*/
-  const selectBoardSize = async (size) => {
+  /*----------------------------- SELECT BOARD SIZE AND DIFFICULTY -----------------------------*/
+  const selectBoardSizeAndDifficulty = async (size, difficulty) => {
     setBoardSize(size);
     setShowModal(false);
     try {
-      const { data: newPuzzle } = await axios.get(`http://localhost:8084/api/v1/puzzle/new?size=${size}`);
-      console.log(newPuzzle);
+      const { data: newPuzzle } = await axios.get(`http://localhost:8084/api/v1/puzzle/new?size=${size}&difficulty=${difficulty}`);
+      setPuzzle(newPuzzle);
       setTimer(0);
       setMoveCount(0);
-      setPuzzle(newPuzzle);
       setGameStarted(true);
     } catch (error) {
       console.error("Error fetching new puzzle: ", error);
@@ -166,9 +176,19 @@ function App() {
     }
   };
 
+  /*----------------------------- SOLVE PUZZLE -----------------------------*/
+  const handleSolvePuzzle = async () => {
+    try {
+      const response = await axios.post('http://localhost:8084/api/v1/puzzle/solve', puzzle);
+      setSolution(response.data);
+    } catch (error) {
+      console.error("Error solving puzzle: ", error);
+    }
+  };
+
   return (
     <div className="App bg-gray-100 min-h-screen flex flex-col justify-center items-center">
-      {!gameStarted ? (
+      {!gameStarted && !showLeaderboard ? (
         <>
           <h1 className="text-4xl font-bold text-gray-800 mb-8">Welcome to the Puzzle Game</h1>
           <div className="menu flex justify-center space-x-4 mb-4">
@@ -179,12 +199,20 @@ function App() {
 
           {showModal && (
             <div className="modal bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
-              <h2 className="text-lg mb-4">Select Board Size</h2>
+              <h2 className="text-lg mb-4">Select Board Size and Difficulty</h2>
+              <div className="difficulty-select mb-4">
+                <label>Difficulty: </label>
+                <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
               <div className="flex space-x-2 mb-4">
                 {[3, 4, 5, 6].map((size) => (
                   <button key={size} className="bg-gray-300 hover:bg-gray-400 
                     text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" 
-                    onClick={() => selectBoardSize(size)}>
+                    onClick={() => selectBoardSizeAndDifficulty(size, difficulty)}>
                     {size}x{size}
                   </button>
                 ))}
@@ -195,6 +223,13 @@ function App() {
               </button>
             </div>
           )}
+        </>
+      ) : showLeaderboard ? (
+        <>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
+            Return to Main Menu
+          </button>
+          <LeaderBoard />
         </>
       ) : (
         <div className="game-div w-full max-w-md p-4">
@@ -207,6 +242,7 @@ function App() {
           <div className="move-count">
             Moves: {moveCount}
           </div>
+          <button className="solve-button" onClick={handleSolvePuzzle}>Solve</button>
           <div className="game-board">
             {puzzle.map((row, rowIndex) => (
               <div key={rowIndex} className="flex justify-center mb-2">
@@ -245,6 +281,16 @@ function App() {
                 />
                 <button onClick={saveRecord}>Save</button>
                 <button onClick={() => setShowSavePopup(false)}>Cancel</button>
+              </div>
+            )}
+            {solution.length > 0 && (
+              <div className="solution">
+                <h3>Solution Steps:</h3>
+                <ul>
+                  {solution.map((step, index) => (
+                    <li key={index}>{step}</li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>

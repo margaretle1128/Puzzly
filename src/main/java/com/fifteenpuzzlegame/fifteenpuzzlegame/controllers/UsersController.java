@@ -41,6 +41,11 @@ public class UsersController {
         new User("Charlie", 20, 200, 6)
     );
 
+    @GetMapping("/users/leaderboard")
+    public ResponseEntity<List<User>> getLeaderboardBySize(@RequestParam int size) {
+        List<User> leaderboard = userRepo.findBySizeOrderByTimeAscMoveAsc(size);
+        return ResponseEntity.ok(leaderboard);
+    }
 
     @GetMapping("/users/samples")
     public ResponseEntity<List<User>> getSampleUsers() {

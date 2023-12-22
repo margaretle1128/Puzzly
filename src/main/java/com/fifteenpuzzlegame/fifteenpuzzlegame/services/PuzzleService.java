@@ -1,10 +1,35 @@
 package com.fifteenpuzzlegame.fifteenpuzzlegame.services;
 
+import com.fifteenpuzzlegame.fifteenpuzzlegame.models.Vertex;
 import org.springframework.stereotype.Service;
-import java.util.Random;
+
+import java.util.*;
 
 @Service
 public class PuzzleService {
+
+    public int[][] generatePuzzleByDifficulty(int size, String difficulty) {
+        int[][] puzzle;
+        List<String> solution;
+        do {
+            puzzle = generateSolvablePuzzle(size);
+            solution = solvePuzzle(puzzle);
+        } while (!matchesDifficulty(solution.size(), difficulty));
+        return puzzle;
+    }
+
+    private boolean matchesDifficulty(int moves, String difficulty) {
+        switch (difficulty.toLowerCase()) {
+            case "easy":
+                return moves >= 5 && moves <= 15;
+            case "medium":
+                return moves > 15 && moves <= 30;
+            case "hard":
+                return moves > 30;
+            default:
+                throw new IllegalArgumentException("Invalid difficulty level: " + difficulty);
+        }
+    }
 
     public int[][] generateSolvablePuzzle(int size) {
         int[][] puzzle = new int[size][size];
@@ -100,4 +125,76 @@ public class PuzzleService {
         }
         return true; 
     }    
+
+        public List<String> solvePuzzle(int[][] start) {
+        // Initialize the goal board based on the size of the start board
+        int SIZE = start.length;
+        int[][] goal = generateGoalBoard(SIZE);
+
+        // Create the open and closed sets
+        PriorityQueue<Vertex> openSet = new PriorityQueue<>();
+        Map<Integer, Vertex> closedSet = new HashMap<>();
+
+        // Create the start state Vertex and add it to the open set
+        Vertex startState = new Vertex(start);
+        openSet.add(startState);
+
+        // While there are states to explore
+        while (!openSet.isEmpty()) {
+            Vertex current = openSet.poll();
+
+            // If the goal is found, return the list of moves
+            if (current.equals(new Vertex(goal))) {
+                return constructPath(current);
+            }
+
+            closedSet.put(current.getHashCode(), current);
+
+            // Generate children (possible moves from the current state)
+            for (Vertex neighbor : current.generateChild()) {
+                // If the neighbor has been explored already, skip it
+                if (closedSet.containsKey(neighbor.getHashCode())) {
+                    continue;
+                }
+
+                // If the neighbor is better than one we've already seen, update it
+                Vertex existing = closedSet.get(neighbor.getHashCode());
+                if (existing == null || neighbor.getDistanceFromStart() < existing.getDistanceFromStart()) {
+                    neighbor.setParent(current);
+                    if (!openSet.contains(neighbor)) {
+                        openSet.add(neighbor);
+                    }
+                }
+            }
+        }
+
+        // If the loop finishes without returning, no solution was found
+        return Collections.emptyList();
+    }
+
+    private List<String> constructPath(Vertex vertex) {
+        LinkedList<String> path = new LinkedList<>();
+        while (vertex != null) {
+            path.addFirst(vertex.getMove());
+            vertex = vertex.getParent();
+        }
+        path.removeFirst(); // Remove the initial state (it's not a move)
+        return path;
+    }
+
+    private int[][] generateGoalBoard(int size) {
+        int[][] board = new int[size][size];
+        int index = 1;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (i == size - 1 && j == size - 1) {
+                    board[i][j] = 0;
+                    break;
+                }
+                board[i][j] = index;
+                index++;
+            }
+        }
+        return board;
+    }
 }
