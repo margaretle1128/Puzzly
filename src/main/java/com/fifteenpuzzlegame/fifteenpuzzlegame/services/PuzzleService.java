@@ -131,15 +131,12 @@ public class PuzzleService {
         int SIZE = start.length;
         int[][] goal = generateGoalBoard(SIZE);
 
-        // Create the open and closed sets
         PriorityQueue<Vertex> openSet = new PriorityQueue<>();
         Map<Integer, Vertex> closedSet = new HashMap<>();
 
-        // Create the start state Vertex and add it to the open set
         Vertex startState = new Vertex(start);
         openSet.add(startState);
 
-        // While there are states to explore
         while (!openSet.isEmpty()) {
             Vertex current = openSet.poll();
 
@@ -147,16 +144,12 @@ public class PuzzleService {
             if (current.equals(new Vertex(goal))) {
                 return constructPath(current);
             }
-
             closedSet.put(current.getHashCode(), current);
 
-            // Generate children (possible moves from the current state)
             for (Vertex neighbor : current.generateChild()) {
-                // If the neighbor has been explored already, skip it
                 if (closedSet.containsKey(neighbor.getHashCode())) {
                     continue;
                 }
-
                 // If the neighbor is better than one we've already seen, update it
                 Vertex existing = closedSet.get(neighbor.getHashCode());
                 if (existing == null || neighbor.getDistanceFromStart() < existing.getDistanceFromStart()) {
@@ -167,8 +160,6 @@ public class PuzzleService {
                 }
             }
         }
-
-        // If the loop finishes without returning, no solution was found
         return Collections.emptyList();
     }
 
@@ -178,7 +169,7 @@ public class PuzzleService {
             path.addFirst(vertex.getMove());
             vertex = vertex.getParent();
         }
-        path.removeFirst(); // Remove the initial state (it's not a move)
+        path.removeFirst(); // Remove the initial state 
         return path;
     }
 
