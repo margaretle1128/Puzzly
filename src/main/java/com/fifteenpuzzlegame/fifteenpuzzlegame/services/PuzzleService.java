@@ -188,4 +188,9 @@ public class PuzzleService {
         }
         return board;
     }
+
+    public List<String> getHints(int[][] board, int hintCount) {
+        List<String> solution = solvePuzzle(board);
+        return solution.subList(0, Math.min(hintCount, solution.size()));
+    }    
 }

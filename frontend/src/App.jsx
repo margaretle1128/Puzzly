@@ -20,6 +20,8 @@ function App() {
   const [showLeaderboard, setShowLeaderboard] = useState(false); 
   const [solution, setSolution] = useState([]);
   const [difficulty, setDifficulty] = useState('easy');
+  const [hints, setHints] = useState([]);
+  const [remainingHints, setRemainingHints] = useState(5);
 
   // Fetch initial data
   useEffect(() => {
@@ -186,6 +188,20 @@ function App() {
     }
   };
 
+  /*----------------------------- REQUEST HINT -----------------------------*/
+  const handleRequestHint = async () => {
+    if (remainingHints > 0 && gameStarted) {
+      try {
+        const response = await axios.post('http://localhost:8084/api/v1/puzzle/hint', { board: puzzle, difficulty });
+        // Replace the existing hints with the new hints
+        setHints(response.data);
+        setRemainingHints(remainingHints - 1);
+      } catch (error) {
+        console.error("Error fetching hints: ", error);
+      }
+    }
+  };
+  
   return (
     <div className="App bg-gray-100 min-h-screen flex flex-col justify-center items-center">
       {!gameStarted && !showLeaderboard ? (
@@ -242,7 +258,19 @@ function App() {
           <div className="move-count">
             Moves: {moveCount}
           </div>
-          <button className="solve-button" onClick={handleSolvePuzzle}>Solve</button>
+          <div className="hint-section">
+            <button 
+              className="hint-button" 
+              onClick={handleRequestHint} 
+              disabled={remainingHints <= 0}>
+                Get Hint ({remainingHints} left)
+            </button>
+            <div className="hints">
+              {hints.map((hint, index) => (
+                <div key={index}>{hint}</div>
+              ))}
+            </div>
+          </div>
           <div className="game-board">
             {puzzle.map((row, rowIndex) => (
               <div key={rowIndex} className="flex justify-center mb-2">
