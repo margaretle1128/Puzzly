@@ -144,10 +144,8 @@ public class Vertex implements Comparable<Vertex>{
         int count = 0;
         int goalValue = 1;
 
-        // Loop through each tile on the board.
         for (int row = 0; row < this.boardLength; row++) {
             for (int col = 0; col < this.boardLength; col++) {
-                // Check if the tile is in the correct position.
                 if (this.board[row][col] != goalValue) {
                     count++;
                 }
@@ -158,7 +156,7 @@ public class Vertex implements Comparable<Vertex>{
             }
         }
 
-        // Subtract 1 from the count to exclude the empty tile.
+        // Exclude the empty tile.
         return count - 1;
     }
     public int calculate() {

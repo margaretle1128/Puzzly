@@ -7,10 +7,10 @@ module.exports = {
     extend: {
       fontFamily: {
         'app': ['Indie Flower', 'sans-serif'],
-        'logo': ['Modak']
+        'logo': ['Leckerli One']
       },
       backgroundImage: {
-        'gradient-custom': 'linear-gradient(to top, #adc1e2, #8f6be2)',
+        'daisy': "url('/src/assets/images/daisy.jpg')",
       },
       minWidth: {
         '64rem': '64rem',

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import './App.css';
 import axios from "axios";
 import LeaderBoard from "./components/LeaderBoard";
+import Logo from "./assets/images/puzzle.png";
 
 function App() {
   /*----------------------------- STATE VARIABLES -----------------------------*/
@@ -204,14 +205,28 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col justify-center items-center">
-      <div className="App max-w-6xl min-w-64rem w-2/5 min-h-screen font-app bg-gradient-custom flex flex-col justify-center items-center">
+      <div className="App max-w-6xl min-w-64rem w-2/5 
+        min-h-screen font-app bg-daisy flex flex-col justify-center items-center gap-10">
         {!gameStarted && !showLeaderboard ? (
           <>
-            <h1 className="font-logo text-9xl text-gray-800 mb-8">Puzzly</h1>
-            <div className="menu flex justify-center space-x-4 mb-4">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleNewGameClick}>New Game</button>
-              <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleLeaderboardClick}>Leaderboard</button>
-              <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleSettingsClick}>Settings</button>
+            <h1 className="font-logo text-9xl text-gray-800">Puzzly</h1>
+            <img src={Logo} alt="Puzzle Logo" className="w-64 h-64 mb-5"/>
+            <div className="menu flex flex-col justify-center gap-5">
+              <button className="bg-blue-500 text-white px-8 py-5 rounded-lg font-bold text-5xl 
+                hover:bg-blue-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
+                onClick={handleNewGameClick}>
+                  New Game
+              </button>
+              <button className="bg-green-500 text-white px-8 py-5 rounded-lg font-bold text-5xl
+                hover:bg-green-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
+                onClick={handleLeaderboardClick}>
+                  Leaderboard
+              </button>
+              <button className="bg-yellow-500 text-white px-8 py-5 rounded-lg font-bold text-5xl
+                hover:bg-yellow-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
+                onClick={handleSettingsClick}>
+                  Settings
+              </button>
             </div>
 
             {showModal && (
