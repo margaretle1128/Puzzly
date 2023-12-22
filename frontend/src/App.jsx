@@ -44,6 +44,16 @@ function App() {
     setShowModal(true);
   };
 
+  const handleCancel = () => {
+    setShowModal(false);
+  };
+
+  const handleClickOutside = (event) => {
+    if (event.target.id === "overlay") {
+      handleCancel();
+    }
+  };
+
   const handleLeaderboardClick = () => {
     setShowLeaderboard(true); 
   };
@@ -205,56 +215,61 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col justify-center items-center">
-      <div className="App max-w-6xl min-w-64rem w-2/5 
+      <div className="App max-w-6xl xl:min-w-64rem min-w-0 xl:w-2/5 w-full 
         min-h-screen font-app bg-daisy flex flex-col justify-center items-center gap-10">
-        {!gameStarted && !showLeaderboard ? (
-          <>
-            <h1 className="font-logo text-9xl text-gray-800">Puzzly</h1>
-            <img src={Logo} alt="Puzzle Logo" className="w-64 h-64 mb-5"/>
-            <div className="menu flex flex-col justify-center gap-5">
-              <button className="bg-blue-500 text-white px-8 py-5 rounded-lg font-bold text-5xl 
-                hover:bg-blue-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
-                onClick={handleNewGameClick}>
-                  New Game
-              </button>
-              <button className="bg-green-500 text-white px-8 py-5 rounded-lg font-bold text-5xl
-                hover:bg-green-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
-                onClick={handleLeaderboardClick}>
-                  Leaderboard
-              </button>
-              <button className="bg-yellow-500 text-white px-8 py-5 rounded-lg font-bold text-5xl
-                hover:bg-yellow-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
-                onClick={handleSettingsClick}>
-                  Settings
-              </button>
-            </div>
 
-            {showModal && (
-              <div className="modal bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
-                <h2 className="text-lg mb-4">Select Board Size and Difficulty</h2>
-                <div className="difficulty-select mb-4">
+        {showModal && (
+          <div id="overlay" className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10" 
+            onClick={handleClickOutside}>
+            <div className="modal bg-modal shadow-lg rounded-lg px-10 pt-10 pb-10 
+              mb-4 flex flex-col items-center absolute z-20 gap-5">
+                <h2 className="text-5xl mb-4 font-bold">Select Board Size and Difficulty</h2>
+                <div className="difficulty-select mb-4 text-3xl font-bold">
                   <label>Difficulty: </label>
-                  <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
+                  <select className="rounded" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
                   </select>
                 </div>
-                <div className="flex space-x-2 mb-4">
+                <div className="flex space-x-3 mb-4">
                   {[3, 4, 5, 6].map((size) => (
-                    <button key={size} className="bg-gray-300 hover:bg-gray-400 
-                      text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" 
+                    <button key={size} className="bg-white hover:bg-gray-100 text-3xl
+                      text-gray-800 font-bold py-2 px-6 rounded inline-flex items-center hover:scale-110" 
                       onClick={() => selectBoardSizeAndDifficulty(size, difficulty)}>
                       {size}x{size}
                     </button>
                   ))}
                 </div>
                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2
-                  px-4 rounded focus:outline-none focus:shadow-outline" onClick={() => setShowModal(false)}>
+                  px-4 rounded focus:outline-none focus:shadow-outline text-3xl" onClick={handleCancel}>
                   Cancel
                 </button>
-              </div>
-            )}
+            </div>
+          </div>
+        )}
+
+        {!gameStarted && !showLeaderboard ? (
+          <>
+            <h1 className="font-bold text-9xl text-gray-800">Puzzly</h1>
+            <img src={Logo} alt="Puzzle Logo" className="w-64 h-64 mb-5"/>
+            <div className="menu flex flex-col justify-center gap-5">
+              <button className="bg-blue-500 text-white px-8 py-5 rounded-xl font-bold text-5xl shadow-lg
+                hover:bg-blue-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
+                onClick={handleNewGameClick}> 
+                  New Game
+              </button>
+              <button className="bg-green-500 text-white px-8 py-5 rounded-xl font-bold text-5xl shadow-lg
+                hover:bg-green-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
+                onClick={handleLeaderboardClick}>
+                  Leaderboard
+              </button>
+              <button className="bg-teal-500 text-white px-8 py-5 rounded-xl font-bold text-5xl shadow-lg
+                hover:bg-teal-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
+                onClick={handleSettingsClick}>
+                  Settings
+              </button>
+            </div>
           </>
         ) : showLeaderboard ? (
           <>
@@ -274,6 +289,7 @@ function App() {
             <div className="move-count">
               Moves: {moveCount}
             </div>
+            <button className="solve-button" onClick={handleSolvePuzzle}>Solve</button>
             <div className="hint-section">
               <button 
                 className="hint-button" 

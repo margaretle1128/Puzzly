@@ -15,6 +15,9 @@ module.exports = {
       minWidth: {
         '64rem': '64rem',
       },
+      colors: {
+        'modal': '#c2bcf8',
+      },
     },
   },
   plugins: [],
