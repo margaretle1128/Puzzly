@@ -201,129 +201,131 @@ function App() {
       }
     }
   };
-  
-  return (
-    <div className="App bg-gray-100 min-h-screen flex flex-col justify-center items-center">
-      {!gameStarted && !showLeaderboard ? (
-        <>
-          <h1 className="text-4xl font-bold text-gray-800 mb-8">Welcome to the Puzzle Game</h1>
-          <div className="menu flex justify-center space-x-4 mb-4">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleNewGameClick}>New Game</button>
-            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleLeaderboardClick}>Leaderboard</button>
-            <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleSettingsClick}>Settings</button>
-          </div>
 
-          {showModal && (
-            <div className="modal bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
-              <h2 className="text-lg mb-4">Select Board Size and Difficulty</h2>
-              <div className="difficulty-select mb-4">
-                <label>Difficulty: </label>
-                <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-                  <option value="easy">Easy</option>
-                  <option value="medium">Medium</option>
-                  <option value="hard">Hard</option>
-                </select>
-              </div>
-              <div className="flex space-x-2 mb-4">
-                {[3, 4, 5, 6].map((size) => (
-                  <button key={size} className="bg-gray-300 hover:bg-gray-400 
-                    text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" 
-                    onClick={() => selectBoardSizeAndDifficulty(size, difficulty)}>
-                    {size}x{size}
-                  </button>
-                ))}
-              </div>
-              <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2
-                px-4 rounded focus:outline-none focus:shadow-outline" onClick={() => setShowModal(false)}>
-                Cancel
-              </button>
+  return (
+    <div className="min-h-screen bg-black flex flex-col justify-center items-center">
+      <div className="App max-w-6xl min-w-64rem w-2/5 min-h-screen font-app bg-gradient-custom flex flex-col justify-center items-center">
+        {!gameStarted && !showLeaderboard ? (
+          <>
+            <h1 className="font-logo text-9xl text-gray-800 mb-8">Puzzly</h1>
+            <div className="menu flex justify-center space-x-4 mb-4">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleNewGameClick}>New Game</button>
+              <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleLeaderboardClick}>Leaderboard</button>
+              <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300 ease-in-out focus:outline-none" onClick={handleSettingsClick}>Settings</button>
             </div>
-          )}
-        </>
-      ) : showLeaderboard ? (
-        <>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
-            Return to Main Menu
-          </button>
-          <LeaderBoard />
-        </>
-      ) : (
-        <div className="game-div w-full max-w-md p-4">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
-            Return to Main Menu
-          </button>
-          <div className="timer-display">
-            Time Elapsed: {formatTime()}
-          </div>
-          <div className="move-count">
-            Moves: {moveCount}
-          </div>
-          <div className="hint-section">
-            <button 
-              className="hint-button" 
-              onClick={handleRequestHint} 
-              disabled={remainingHints <= 0}>
-                Get Hint ({remainingHints} left)
-            </button>
-            <div className="hints">
-              {hints.map((hint, index) => (
-                <div key={index}>{hint}</div>
-              ))}
-            </div>
-          </div>
-          <div className="game-board">
-            {puzzle.map((row, rowIndex) => (
-              <div key={rowIndex} className="flex justify-center mb-2">
-                {row.map((tile, tileIndex) => (
-                  <div
-                    key={tileIndex}
-                    className={`border-2 border-gray-400 w-12 h-12 flex justify-center items-center m-1 ${
-                      tile === 0 ? 'bg-white' : 'bg-blue-500 text-white'
-                    }`}
-                    onClick={() => handleTileClick(tile, rowIndex, tileIndex)}
-                  >
-                    {tile !== 0 ? tile : ''}
-                  </div>
-                ))}
-              </div>
-            ))}
-            {showSolvedPopup && (
-              <div className="solved-popup bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
-                <p>Congratulations! You solved the puzzle.</p>
-                <p>Time: {formatTime()}</p>
-                <p>Moves: {moveCount}</p>
-                <button onClick={() => setShowSavePopup(true)}>Save Record</button>
-                <button onClick={() => {
-                  setShowSolvedPopup(false);
-                  setGameStarted(false);
-                }}>Close</button>
-              </div>
-            )}
-            {showSavePopup && (
-              <div>
-                <input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                />
-                <button onClick={saveRecord}>Save</button>
-                <button onClick={() => setShowSavePopup(false)}>Cancel</button>
-              </div>
-            )}
-            {solution.length > 0 && (
-              <div className="solution">
-                <h3>Solution Steps:</h3>
-                <ul>
-                  {solution.map((step, index) => (
-                    <li key={index}>{step}</li>
+
+            {showModal && (
+              <div className="modal bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
+                <h2 className="text-lg mb-4">Select Board Size and Difficulty</h2>
+                <div className="difficulty-select mb-4">
+                  <label>Difficulty: </label>
+                  <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </div>
+                <div className="flex space-x-2 mb-4">
+                  {[3, 4, 5, 6].map((size) => (
+                    <button key={size} className="bg-gray-300 hover:bg-gray-400 
+                      text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center" 
+                      onClick={() => selectBoardSizeAndDifficulty(size, difficulty)}>
+                      {size}x{size}
+                    </button>
                   ))}
-                </ul>
+                </div>
+                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2
+                  px-4 rounded focus:outline-none focus:shadow-outline" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
               </div>
             )}
+          </>
+        ) : showLeaderboard ? (
+          <>
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
+              Return to Main Menu
+            </button>
+            <LeaderBoard />
+          </>
+        ) : (
+          <div className="game-div w-full max-w-md p-4">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
+              Return to Main Menu
+            </button>
+            <div className="timer-display">
+              Time Elapsed: {formatTime()}
+            </div>
+            <div className="move-count">
+              Moves: {moveCount}
+            </div>
+            <div className="hint-section">
+              <button 
+                className="hint-button" 
+                onClick={handleRequestHint} 
+                disabled={remainingHints <= 0}>
+                  Get Hint ({remainingHints} left)
+              </button>
+              <div className="hints">
+                {hints.map((hint, index) => (
+                  <div key={index}>{hint}</div>
+                ))}
+              </div>
+            </div>
+            <div className="game-board">
+              {puzzle.map((row, rowIndex) => (
+                <div key={rowIndex} className="flex justify-center mb-2">
+                  {row.map((tile, tileIndex) => (
+                    <div
+                      key={tileIndex}
+                      className={`border-2 border-gray-400 w-12 h-12 flex justify-center items-center m-1 ${
+                        tile === 0 ? 'bg-white' : 'bg-blue-500 text-white'
+                      }`}
+                      onClick={() => handleTileClick(tile, rowIndex, tileIndex)}
+                    >
+                      {tile !== 0 ? tile : ''}
+                    </div>
+                  ))}
+                </div>
+              ))}
+              {showSolvedPopup && (
+                <div className="solved-popup bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
+                  <p>Congratulations! You solved the puzzle.</p>
+                  <p>Time: {formatTime()}</p>
+                  <p>Moves: {moveCount}</p>
+                  <button onClick={() => setShowSavePopup(true)}>Save Record</button>
+                  <button onClick={() => {
+                    setShowSolvedPopup(false);
+                    setGameStarted(false);
+                  }}>Close</button>
+                </div>
+              )}
+              {showSavePopup && (
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                  />
+                  <button onClick={saveRecord}>Save</button>
+                  <button onClick={() => setShowSavePopup(false)}>Cancel</button>
+                </div>
+              )}
+              {solution.length > 0 && (
+                <div className="solution">
+                  <h3>Solution Steps:</h3>
+                  <ul>
+                    {solution.map((step, index) => (
+                      <li key={index}>{step}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
