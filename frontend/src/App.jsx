@@ -23,6 +23,8 @@ function App() {
   const [difficulty, setDifficulty] = useState('easy');
   const [hints, setHints] = useState([]);
   const [remainingHints, setRemainingHints] = useState(5);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isPuzzleSolved, setIsPuzzleSolved] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -138,7 +140,7 @@ function App() {
       setPuzzle(newPuzzle);
       setMoveCount(prev => prev + 1);
 
-      if (isSolved(newPuzzle)) {
+      if (isSolved(newPuzzle) && !isPuzzleSolved) {
         setShowSolvedPopup(true);
         setIsTimerActive(false);
       }
@@ -190,10 +192,18 @@ function App() {
   };
 
   /*----------------------------- SOLVE PUZZLE -----------------------------*/
-  const handleSolvePuzzle = async () => {
+  const handleSolvePuzzle = () => {
+    setShowConfirmation(true);
+  };
+
+  const confirmSolvePuzzle = async () => {
     try {
       const response = await axios.post('http://localhost:8084/api/v1/puzzle/solve', puzzle);
       setSolution(response.data);
+      setIsTimerActive(false);
+      setIsPuzzleSolved(true);
+      setShowSolvedPopup(false); 
+      setShowConfirmation(false);
     } catch (error) {
       console.error("Error solving puzzle: ", error);
     }
@@ -227,9 +237,9 @@ function App() {
                 <div className="difficulty-select mb-4 text-3xl font-bold">
                   <label>Difficulty: </label>
                   <select className="rounded" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
+                    <option className="font-bold" value="easy">Easy</option>
+                    <option className="font-bold" value="medium">Medium</option>
+                    <option className="font-bold" value="hard">Hard</option>
                   </select>
                 </div>
                 <div className="flex space-x-3 mb-4">
@@ -245,6 +255,29 @@ function App() {
                   px-4 rounded focus:outline-none focus:shadow-outline text-3xl" onClick={handleCancel}>
                   Cancel
                 </button>
+            </div>
+          </div>
+        )}
+
+        {showConfirmation && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="modal bg-white p-8 rounded shadow-lg z-50">
+              <h3 className="mb-4 text-lg font-bold">Are you sure?</h3>
+              <p className="mb-4">Solving the puzzle will end the game.</p>
+              <div className="flex justify-between">
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none"
+                  onClick={() => setShowConfirmation(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none"
+                  onClick={confirmSolvePuzzle}
+                >
+                  Confirm
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -289,13 +322,20 @@ function App() {
             <div className="move-count">
               Moves: {moveCount}
             </div>
-            <button className="solve-button" onClick={handleSolvePuzzle}>Solve</button>
+            <button
+              className="solve-button"
+              onClick={handleSolvePuzzle}
+              disabled={isPuzzleSolved}
+            >
+              Solve
+            </button>
             <div className="hint-section">
-              <button 
-                className="hint-button" 
-                onClick={handleRequestHint} 
-                disabled={remainingHints <= 0}>
-                  Get Hint ({remainingHints} left)
+              <button
+                className="hint-button"
+                onClick={handleRequestHint}
+                disabled={remainingHints <= 0 || isPuzzleSolved}
+              >
+                Get Hint ({remainingHints} left)
               </button>
               <div className="hints">
                 {hints.map((hint, index) => (
