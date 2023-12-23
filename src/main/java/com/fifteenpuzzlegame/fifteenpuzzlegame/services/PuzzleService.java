@@ -9,68 +9,73 @@ import java.util.*;
 public class PuzzleService {
 
     public int[][] generatePuzzleByDifficulty(int size, String difficulty) {
-        int[][] puzzle;
-        List<String> solution;
-        do {
-            puzzle = generateSolvablePuzzle(size);
-            solution = solvePuzzle(puzzle);
-        } while (!matchesDifficulty(solution.size(), difficulty));
-        return puzzle;
+        int movesRequired = getMovesForDifficulty(difficulty, size);
+        return shufflePuzzle(size, movesRequired);
     }
 
-    private boolean matchesDifficulty(int moves, String difficulty) {
+    private int getMovesForDifficulty(String difficulty, int size) {
+        int baseEasy = 10;
+        int baseMedium = 25;
+        int baseHard = 40;
+        int scale = (size - 3);
+        int easyMoves = baseEasy + scale * 5;
+        int mediumMoves = baseMedium + scale * 10;
+        int hardMoves = baseHard + scale * 15;
+
         switch (difficulty.toLowerCase()) {
             case "easy":
-                return moves >= 5 && moves <= 15;
+                return easyMoves;
             case "medium":
-                return moves > 15 && moves <= 30;
+                return mediumMoves;
             case "hard":
-                return moves > 30;
+                return hardMoves;
             default:
                 throw new IllegalArgumentException("Invalid difficulty level: " + difficulty);
         }
     }
 
-    public int[][] generateSolvablePuzzle(int size) {
+    private int[][] shufflePuzzle(int size, int moves) {
+        int[][] puzzle = generateSolvedPuzzle(size);
+        int blankRow = size - 1;
+        int blankCol = size - 1;
+        while (moves > 0) {
+            int[] direction = getRandomDirection();
+            int newRow = blankRow + direction[0];
+            int newCol = blankCol + direction[1];
+
+            if (isValidPosition(newRow, newCol, size)) {
+                // Perform swap
+                puzzle[blankRow][blankCol] = puzzle[newRow][newCol];
+                puzzle[newRow][newCol] = 0;
+                blankRow = newRow;
+                blankCol = newCol;
+                moves--;
+            }
+        }
+        return puzzle;
+    }
+
+    private boolean isValidPosition(int row, int col, int size) {
+        return row >= 0 && row < size && col >= 0 && col < size;
+    }
+
+    private int[][] generateSolvedPuzzle(int size) {
         int[][] puzzle = new int[size][size];
-        // Fill the puzzle with numbers 1 to size*size-1
         int num = 1;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 puzzle[i][j] = num++;
             }
         }
-        puzzle[size - 1][size - 1] = 0; // Set the last cell as the empty cell
-    
-        // Shuffle the puzzle until it is solvable
-        do {
-            puzzle = shufflePuzzle(puzzle, size);
-        } while (!isSolvable(puzzle) || isSolved(puzzle));
-    
+        puzzle[size - 1][size - 1] = 0; // Set the last cell as empty
         return puzzle;
     }
 
-    private int[][] shufflePuzzle(int[][] solvedPuzzle, int size) {
+    private int[] getRandomDirection() {
+        // Directions: up, right, down, left
+        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
         Random random = new Random();
-        int emptyX = size - 1;
-        int emptyY = size - 1;
-        int[] dx = {0, 1, 0, -1};
-        int[] dy = {-1, 0, 1, 0}; // directions: up, right, down, left
-
-        for (int i = 0; i < 1000; i++) { // perform a large number of random moves
-            int dir = random.nextInt(4);
-            int newX = emptyX + dx[dir];
-            int newY = emptyY + dy[dir];
-
-            if (newX >= 0 && newX < size && newY >= 0 && newY < size) {
-                // Swap empty space with adjacent tile
-                solvedPuzzle[emptyX][emptyY] = solvedPuzzle[newX][newY];
-                solvedPuzzle[newX][newY] = 0;
-                emptyX = newX;
-                emptyY = newY;
-            }
-        }
-        return solvedPuzzle;
+        return directions[random.nextInt(directions.length)];
     }
 
     public boolean isSolvable(int[][] puzzle) {

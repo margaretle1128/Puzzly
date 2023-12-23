@@ -7,7 +7,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'app': ['Indie Flower', 'sans-serif'],
-        'logo': ['Leckerli One']
+        'number': ['Lemon']
       },
       backgroundImage: {
         'daisy': "url('/src/assets/images/daisy.jpg')",
