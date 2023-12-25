@@ -227,6 +227,11 @@ function App() {
     }
   };
 
+  /*----------------------------- UI SECTION -----------------------------*/
+  const getWidthClass = () => {
+    return boardSize === 3 ? "w-1/3" : "w-1/4";
+  };
+
   return (
     <div className="min-h-screen bg-black flex flex-col justify-center items-center">
       <div className="App max-w-6xl xl:min-w-64rem min-w-0 xl:w-2/5 w-full 
@@ -316,57 +321,58 @@ function App() {
             <LeaderBoard />
           </>
         ) : (
-          <div className="game-div w-4/5 p-4">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
-              Back to Main Menu
-            </button>
-            <div className="functions flex flex-row justify-between">
-              <div className="left flex flex-row justify-between items-center w-1/3">
-                <div className="timer-display">
-                  Time
-                  <div className="flex justify-center items-center">
-                    {formatTime()}
+          <div className="game-div w-10/12 p-4 flex justify-center items-center">
+            <div className="game-board w-fit">
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
+                Back to Main Menu
+              </button>
+              <div className={`functions flex flex-row justify-between `}>
+              <div className={`left flex flex-row justify-between items-center ${getWidthClass()}`}>
+                  <div className="timer-display">
+                    Time
+                    <div className="flex justify-center items-center">
+                      {formatTime()}
+                    </div>
+                  </div>
+                  <div className="move-count">
+                    Moves 
+                    <div className="flex justify-center items-center">
+                      {moveCount}
+                    </div>
                   </div>
                 </div>
-                <div className="move-count">
-                  Moves 
-                  <div className="flex justify-center items-center">
-                    {moveCount}
-                  </div>
+                <div className={`right flex flex-row justify-between items-center ${getWidthClass()}`}>
+                  <button
+                    className="hint-button"
+                    onClick={handleRequestHint}
+                    disabled={remainingHints <= 0 || isPuzzleSolved}
+                  >
+                    Get Hint ({remainingHints})
+                  </button>
+                  <button
+                    className="solve-button"
+                    onClick={handleSolvePuzzle}
+                    disabled={isPuzzleSolved}
+                  >
+                    Solve
+                  </button>
                 </div>
               </div>
-              <div className="right flex flex-row justify-between items-center w-1/3">
-                <button
-                  className="hint-button"
-                  onClick={handleRequestHint}
-                  disabled={remainingHints <= 0 || isPuzzleSolved}
-                >
-                  Get Hint ({remainingHints} left)
-                </button>
-                <button
-                  className="solve-button"
-                  onClick={handleSolvePuzzle}
-                  disabled={isPuzzleSolved}
-                >
-                  Solve
-                </button>
+              <div className="hint-section">
+                <div className="hints">
+                  {hints.map((hint, index) => (
+                    <div key={index}>{hint}</div>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="hint-section">
-              <div className="hints">
-                {hints.map((hint, index) => (
-                  <div key={index}>{hint}</div>
-                ))}
-              </div>
-            </div>
-            <div className="game-board">
               {puzzle.map((row, rowIndex) => (
                 <div key={rowIndex} className="flex justify-center mb-2">
                   {row.map((tile, tileIndex) => (
                     <div
                       key={tileIndex}
-                      className={`font-number w-40 h-40 flex justify-center items-center m-1 ${
-                        tile === 0 ? 'bg-white' : 'bg-blue-500 text-white'
+                      className={`font-number text-shadow text-5xl w-32 h-32 cursor-pointer
+                        flex justify-center items-center m-1.5 rounded-2xl ${
+                        tile === 0 ? 'bg-blue-500 opacity-30' : 'bg-blue-500 text-white'
                       }`}
                       onClick={() => handleTileClick(tile, rowIndex, tileIndex)}
                     >

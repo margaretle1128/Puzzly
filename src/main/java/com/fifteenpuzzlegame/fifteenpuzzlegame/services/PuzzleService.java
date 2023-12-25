@@ -10,7 +10,11 @@ public class PuzzleService {
 
     public int[][] generatePuzzleByDifficulty(int size, String difficulty) {
         int movesRequired = getMovesForDifficulty(difficulty, size);
-        return shufflePuzzle(size, movesRequired);
+        int[][] puzzle;
+        do {
+            puzzle = shufflePuzzle(size, movesRequired);
+        } while (isSolved(puzzle));
+        return puzzle;
     }
 
     private int getMovesForDifficulty(String difficulty, int size) {
@@ -131,7 +135,7 @@ public class PuzzleService {
         return true; 
     }    
 
-        public List<String> solvePuzzle(int[][] start) {
+    public List<String> solvePuzzle(int[][] start) {
         // Initialize the goal board based on the size of the start board
         int SIZE = start.length;
         int[][] goal = generateGoalBoard(SIZE);
