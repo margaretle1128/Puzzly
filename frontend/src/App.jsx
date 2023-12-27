@@ -71,6 +71,7 @@ function App() {
     setSolution([]);
     setIsPuzzleSolved(false);
     setRemainingHints(5);
+    setHints([]); 
   };
 
   /*----------------------------- SELECT BOARD SIZE AND DIFFICULTY -----------------------------*/
@@ -85,6 +86,7 @@ function App() {
       setGameStarted(true);
       setIsPuzzleSolved(false);
       setRemainingHints(5);
+      setHints([]); 
     } catch (error) {
       console.error("Error fetching new puzzle: ", error);
     }
@@ -228,9 +230,17 @@ function App() {
   };
 
   /*----------------------------- UI SECTION -----------------------------*/
-  const getWidthClass = () => {
-    return boardSize === 3 ? "w-1/3" : "w-1/4";
-  };
+  const getWidthClassRight = () => {
+    if (boardSize === 3) {
+      return "w-8/12";
+    } else if (boardSize === 4) {
+      return "w-3/5";
+    } else if (boardSize === 5){
+      return "w-2/4";
+    } else {
+      return "w-2/5";
+    }
+  };  
 
   return (
     <div className="min-h-screen bg-black flex flex-col justify-center items-center">
@@ -269,7 +279,7 @@ function App() {
         )}
 
         {showConfirmation && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="modal bg-white p-8 rounded shadow-lg z-50">
               <h3 className="mb-4 text-lg font-bold">Are you sure?</h3>
               <p className="mb-4">Solving the puzzle will end the game.</p>
@@ -293,20 +303,20 @@ function App() {
 
         {!gameStarted && !showLeaderboard ? (
           <>
-            <h1 className="font-bold text-9xl text-gray-800">Puzzly</h1>
-            <img src={Logo} alt="Puzzle Logo" className="w-64 h-64 mb-5"/>
+            <h1 className="font-bold text-8xl text-gray-800">Puzzly</h1>
+            <img src={Logo} alt="Puzzle Logo" className="w-52 h-52 mb-5"/>
             <div className="menu flex flex-col justify-center gap-5">
-              <button className="bg-blue-500 text-white px-8 py-5 rounded-xl font-bold text-5xl shadow-lg
+              <button className="bg-blue-500 text-white px-8 py-5 rounded-xl font-bold text-4xl shadow-lg text-shadow
                 hover:bg-blue-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
                 onClick={handleNewGameClick}> 
                   New Game
               </button>
-              <button className="bg-green-500 text-white px-8 py-5 rounded-xl font-bold text-5xl shadow-lg
+              <button className="bg-green-500 text-white px-8 py-5 rounded-xl font-bold text-4xl shadow-lg text-shadow
                 hover:bg-green-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
                 onClick={handleLeaderboardClick}>
                   Leaderboard
               </button>
-              <button className="bg-teal-500 text-white px-8 py-5 rounded-xl font-bold text-5xl shadow-lg
+              <button className="bg-teal-500 text-white px-8 py-5 rounded-xl font-bold text-4xl shadow-lg text-shadow
                 hover:bg-teal-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
                 onClick={handleSettingsClick}>
                   Settings
@@ -321,48 +331,27 @@ function App() {
             <LeaderBoard />
           </>
         ) : (
-          <div className="game-div w-10/12 p-4 flex justify-center items-center">
+          <div className="game-div w-10/12 pt-1.5 flex justify-center items-center">
             <div className="game-board w-fit">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
-                Back to Main Menu
-              </button>
-              <div className={`functions flex flex-row justify-between `}>
-              <div className={`left flex flex-row justify-between items-center ${getWidthClass()}`}>
-                  <div className="timer-display">
-                    Time
-                    <div className="flex justify-center items-center">
-                      {formatTime()}
+              <div className="flex flex-row justify-between h-24 mb-3">
+                <button className="text-white flex flex-start font-semibold text-7xl font-mono hover:scale-110" onClick={handleReturnToMenu}>
+                  &lt;
+                </button>
+                <div className={`functions flex flex-row justify-end pb-5 w-full`}>
+                  <div className={`right rounded-2xl bg-yellow-500 h-24 p-4 text-white text-2xl flex flex-row justify-between items-center ${getWidthClassRight()}`}>
+                    <div className="timer-display text-shadow font-bold text-xl flex flex-col justify-center items-end">
+                      Time
+                      <div className="flex font-timer text-3xl justify-center items-center">
+                        {formatTime()}
+                      </div>
+                    </div>
+                    <div className="move-count font-bold text-shadow flex text-xl flex-col justify-center items-end">
+                      Moves 
+                      <div className="flex font-timer text-3xl justify-center items-center">
+                        {moveCount}
+                      </div>
                     </div>
                   </div>
-                  <div className="move-count">
-                    Moves 
-                    <div className="flex justify-center items-center">
-                      {moveCount}
-                    </div>
-                  </div>
-                </div>
-                <div className={`right flex flex-row justify-between items-center ${getWidthClass()}`}>
-                  <button
-                    className="hint-button"
-                    onClick={handleRequestHint}
-                    disabled={remainingHints <= 0 || isPuzzleSolved}
-                  >
-                    Get Hint ({remainingHints})
-                  </button>
-                  <button
-                    className="solve-button"
-                    onClick={handleSolvePuzzle}
-                    disabled={isPuzzleSolved}
-                  >
-                    Solve
-                  </button>
-                </div>
-              </div>
-              <div className="hint-section">
-                <div className="hints">
-                  {hints.map((hint, index) => (
-                    <div key={index}>{hint}</div>
-                  ))}
                 </div>
               </div>
               {puzzle.map((row, rowIndex) => (
@@ -370,9 +359,9 @@ function App() {
                   {row.map((tile, tileIndex) => (
                     <div
                       key={tileIndex}
-                      className={`font-number text-shadow text-5xl w-32 h-32 cursor-pointer
-                        flex justify-center items-center m-1.5 rounded-2xl ${
-                        tile === 0 ? 'bg-blue-500 opacity-30' : 'bg-blue-500 text-white'
+                      className={`font-number text-shadow text-3xl w-24 h-24 cursor-pointer
+                        flex justify-center items-center m-1 rounded-2xl ${
+                        tile === 0 ? 'bg-blue-500 opacity-30 relative z-0' : 'bg-blue-500 text-white'
                       }`}
                       onClick={() => handleTileClick(tile, rowIndex, tileIndex)}
                     >
@@ -381,6 +370,31 @@ function App() {
                   ))}
                 </div>
               ))}
+              <div className={`rounded-2xl p-1 text-white text-2xl flex flex-row justify-between items-center w-full gap-4`}>
+                <button
+                  className="hint-button text-shadow font-bold text-3xl w-1/2 bg-green-500 py-4 rounded-xl
+                  hover:scale-110 transition duration-300 ease-in-out focus:outline-none"
+                  onClick={handleRequestHint}
+                  disabled={remainingHints <= 0 || isPuzzleSolved}
+                >
+                  Hint ({remainingHints} left)
+                </button>
+                <button
+                    className="solve-button text-shadow font-bold text-3xl w-1/2 bg-green-500 py-4 rounded-xl
+                    hover:scale-110 transition duration-300 ease-in-out focus:outline-none"
+                    onClick={handleSolvePuzzle}
+                    disabled={isPuzzleSolved}
+                  >
+                    Solve
+                </button>
+              </div>
+                <div className="hint-section">
+                    <div className="hints text-3xl">
+                      {hints.map((hint, index) => (
+                        <div key={index}>{hint}</div>
+                      ))}
+                    </div>
+                </div>
               {showSolvedPopup && (
                 <div className="solved-popup bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
                   <p>Congratulations! You solved the puzzle.</p>

@@ -7,7 +7,8 @@ module.exports = {
     extend: {
       fontFamily: {
         'app': ['Indie Flower', 'sans-serif'],
-        'number': ['Lemon']
+        'number': ['Lemon'],
+        'timer': ['Quicksand'],
       },
       backgroundImage: {
         'daisy': "url('/src/assets/images/daisy.jpg')",
