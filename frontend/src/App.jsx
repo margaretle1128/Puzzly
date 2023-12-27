@@ -96,10 +96,10 @@ function App() {
   /*----------------------------- SWAP TILES -----------------------------*/
   const handleTileClick = (tile, rowIndex, tileIndex) => {
     // If the puzzle is already solved, prevent any further moves
-    if (showSolvedPopup) {
+    if (showSolvedPopup || tile === 0) {
       return;
     }
-
+  
     // Function to find empty tile
     const findEmptyTile = (puzzle) => {
       for (let r = 0; r < puzzle.length; r++) {
@@ -117,15 +117,63 @@ function App() {
         (tilePos.column === emptyPos.c && Math.abs(tilePos.row - emptyPos.r) === 1)
       );
     };
-
+  
+    const emptyTilePos = findEmptyTile(puzzle);
+    if (isValidMove({ row: rowIndex, column: tileIndex }, emptyTilePos)) {
+      // Calculate the translation distance based on your tile size
+      const translateDistance = "100%"; // Adjust based on your tile size
+  
+      // Determine the direction and set the translation style
+      let translationStyle = {};
+      if (rowIndex > emptyTilePos.r) { // Tile moves up
+        translationStyle = { transform: `translateY(-${translateDistance})` };
+      } else if (rowIndex < emptyTilePos.r) { // Tile moves down
+        translationStyle = { transform: `translateY(${translateDistance})` };
+      } else if (tileIndex > emptyTilePos.c) { // Tile moves left
+        translationStyle = { transform: `translateX(-${translateDistance})` };
+      } else if (tileIndex < emptyTilePos.c) { // Tile moves right
+        translationStyle = { transform: `translateX(${translateDistance})` };
+      }
+  
+      // Apply the style to the tile 
+      const newPuzzle = puzzle.map((row, rIndex) => 
+        row.map((cell, cIndex) => {
+          if (rIndex === rowIndex && cIndex === tileIndex) {
+            return { value: cell, style: translationStyle };
+          }
+          return cell;
+        })
+      );
+  
+      setPuzzle(newPuzzle);
+  
+      setTimeout(() => {
+        finalizeTileMove(rowIndex, tileIndex, emptyTilePos);
+      }, 300); // Duration should match your CSS transition
+    }
+  };
+  
+  const finalizeTileMove = (rowIndex, tileIndex, emptyTilePos) => {
     // Swap the clicked tile with the empty space
     const swapTiles = (puzzle, fromPos, toPos) => {
       const newPuzzle = puzzle.map(row => [...row]);
-      newPuzzle[toPos.r][toPos.c] = newPuzzle[fromPos.row][fromPos.column];
+      newPuzzle[toPos.r][toPos.c] = puzzle[fromPos.row][fromPos.column];
       newPuzzle[fromPos.row][fromPos.column] = 0;
       return newPuzzle;
     };
-
+  
+    const newPuzzle = swapTiles(puzzle, { row: rowIndex, column: tileIndex }, emptyTilePos);
+    const resetStylesPuzzle = newPuzzle.map(row =>
+      row.map(cell => {
+        if (typeof cell === 'object' && cell.style) {
+          return cell.value;
+        }
+        return cell;
+      })
+    );
+  
+    setPuzzle(resetStylesPuzzle);
+  
     // Function to check if the puzzle is solved
     const isSolved = (puzzle) => {
       let number = 1;
@@ -140,20 +188,13 @@ function App() {
       }
       return true;
     };
-
-    const emptyTilePos = findEmptyTile(puzzle);
-    if (isValidMove({ row: rowIndex, column: tileIndex }, emptyTilePos)) {
-      const newPuzzle = swapTiles(puzzle, { row: rowIndex, column: tileIndex }, emptyTilePos);
-      setPuzzle(newPuzzle);
-      setMoveCount(prev => prev + 1);
-
-      if (isSolved(newPuzzle) && !isPuzzleSolved) {
-        setShowSolvedPopup(true);
-        setIsTimerActive(false);
-        setIsPuzzleSolved(true);
-      }
+  
+    if (isSolved(resetStylesPuzzle)) {
+      setShowSolvedPopup(true);
+      setIsTimerActive(false);
+      setIsPuzzleSolved(true);
     }
-  };
+  };  
 
   /*----------------------------- TIMER -----------------------------*/
   useEffect(() => {
@@ -380,18 +421,25 @@ function App() {
               </div>
               {puzzle.map((row, rowIndex) => (
                 <div key={rowIndex} className="flex justify-center mb-2">
-                  {row.map((tile, tileIndex) => (
-                    <div
-                      key={tileIndex}
-                      className={`font-number text-shadow text-3xl w-24 h-24 cursor-pointer
-                        flex justify-center items-center m-1 rounded-2xl ${
-                        tile === 0 ? 'bg-blue-500 opacity-30 relative z-0' : 'bg-blue-500 text-white'
-                      }`}
-                      onClick={() => handleTileClick(tile, rowIndex, tileIndex)}
-                    >
-                      {tile !== 0 ? tile : ''}
-                    </div>
-                  ))}
+                  {row.map((tile, tileIndex) => {
+                    // Extract the value and style if tile is an object, otherwise assume it's just the value
+                    const tileValue = tile.value !== undefined ? tile.value : tile;
+                    const tileStyle = tile.style !== undefined ? tile.style : {};
+
+                    return (
+                      <div
+                        key={tileIndex}
+                        className={`font-number text-shadow text-3xl w-24 h-24 cursor-pointer
+                          flex justify-center items-center m-1 rounded-2xl transition-transform duration-300 ${
+                          tileValue === 0 ? 'bg-blue-500 opacity-30 relative z-0' : 'bg-blue-500 text-white'
+                        }`}
+                        style={tileStyle}
+                        onClick={() => handleTileClick(tileValue, rowIndex, tileIndex)}
+                      >
+                        {tileValue !== 0 ? tileValue : ''}
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
               <div className={`rounded-2xl p-1 text-white text-2xl flex flex-row justify-between items-center w-full gap-4`}>

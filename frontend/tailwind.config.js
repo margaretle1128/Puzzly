@@ -23,6 +23,9 @@ module.exports = {
       height: {
         '44rem': '44rem',
       },
+      transitionProperty: {
+        'position': 'top, right, bottom, left',
+      },
     },
   },
   plugins: [
