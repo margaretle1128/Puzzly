@@ -26,6 +26,7 @@ function App() {
   const [remainingHints, setRemainingHints] = useState(5);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isPuzzleSolved, setIsPuzzleSolved] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -61,7 +62,9 @@ function App() {
     setShowLeaderboard(true); 
   };
 
-  const handleSettingsClick = () => { /* logic for settings */ };
+  const handleHowtoPlayClick = () => {
+    setShowHowToPlay(!showHowToPlay);
+  };
 
   const handleReturnToMenu = () => {
     setShowLeaderboard(false);
@@ -380,8 +383,8 @@ function App() {
               </button>
               <button className="bg-teal-500 text-white px-8 py-5 rounded-xl font-bold text-4xl shadow-lg text-shadow
                 hover:bg-teal-600 hover:scale-110 transition duration-300 ease-in-out focus:outline-none" 
-                onClick={handleSettingsClick}>
-                  Settings
+                onClick={handleHowtoPlayClick}>
+                  How to Play
               </button>
             </div>
           </>
@@ -543,6 +546,32 @@ function App() {
             </div>
           </div>
         )}
+        {showHowToPlay && (
+  <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+    <div className="modal bg-modal p-8 rounded-lg shadow-xl z-50 max-w-3xl w-full">
+      <h3 className="mb-4 text-5xl font-bold text-center text-black">How to Play Puzzly</h3>
+      <div className="text-2xl leading-relaxed">
+        <ul className="list-none space-y-2">
+          <li><span className="font-bold">1.</span> Select a puzzle size and difficulty level to start the game.</li>
+          <li><span className="font-bold">2.</span>  Click on a tile adjacent to the empty space to move it.</li>
+          <li><span className="font-bold">3.</span>  The goal is to arrange the tiles in numerical order.</li>
+          <li><span className="font-bold">4.</span>  Use hints if you're stuck, but remember, you have limited hints!</li>
+          <li><span className="font-bold">5.</span>  Try to solve the puzzle in the least amount of time and moves.</li>
+          <li><span className="font-bold">6.</span>  Once solved, you can save your record and see where you stand on the leaderboard.</li>
+        </ul>
+      </div>
+      <div className="mt-6 flex justify-center">
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-2xl text-white font-bold py-2 px-6 rounded-lg focus:outline-none transition duration-200 ease-in-out"
+          onClick={() => setShowHowToPlay(false)}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   );
