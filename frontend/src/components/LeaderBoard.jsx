@@ -21,48 +21,61 @@ function LeaderBoard() {
     }, [selectedSize, selectedDifficulty]); 
 
     return (
-        <div>
-            <div className="board-size-tabs">
-                {[3, 4, 5, 6].map(size => (
-                    <button key={size} onClick={() => setSelectedSize(size)} className={selectedSize === size ? 'active' : ''}>
-                        {size}x{size}
-                    </button>
-                ))}
-            </div>
-            {/* Difficulty selection dropdown */}
-            <div className="difficulty-select">
-                <label htmlFor="difficulty">Difficulty:</label>
-                <select 
-                    id="difficulty"
-                    value={selectedDifficulty}
-                    onChange={(e) => setSelectedDifficulty(e.target.value)}
-                >
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                </select>
-            </div>
-            <div className="leaderboard-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Name</th>
-                            <th>Time (seconds)</th>
-                            <th>Moves</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {leaderboardData.map((user, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{user.name}</td>
-                                <td>{user.time}</td>
-                                <td>{user.move}</td>
-                            </tr>
+        <div className="p-6 bg-white rounded shadow-lg w-full mt-5 h-44rem">
+            <div className="wrapper h-full">
+                <div className="flex justify-between mb-4 gap-14">
+                    <div className="board-size-tabs flex justify-between gap-2">
+                        {[3, 4, 5, 6].map(size => (
+                            <button 
+                                key={size} 
+                                onClick={() => setSelectedSize(size)} 
+                                className={`py-1 px-5 text-3xl font-bold rounded hover:text-shadow focus:outline-none hover:bg-modal hover:text-white ${selectedSize === size ? 'bg-modal text-shadow text-white' : 'bg-gray-200 text-black'}`}
+                            >
+                                {size}x{size}
+                            </button>
                         ))}
-                    </tbody>
-                </table>
+                    </div>
+                    <div className="difficulty-select text-3xl font-bold">
+                        <label htmlFor="difficulty" className="mr-2 text-black">Difficulty:</label>
+                        <select 
+                            id="difficulty"
+                            value={selectedDifficulty}
+                            onChange={(e) => setSelectedDifficulty(e.target.value)}
+                            className="p-1 bg-white border rounded shadow focus:outline-none"
+                        >
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="leaderboard-table text-2xl h-full">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr>
+                                <th className="p-2 border-b-2">Rank</th>
+                                <th className="p-2 border-b-2">Name</th>
+                                <th className="p-2 border-b-2">Time (seconds)</th>
+                                <th className="p-2 border-b-2">Moves</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <div className="overflow-auto h-5/6">
+                        <table className="w-full text-left border-collapse">
+                            <tbody>
+                                {leaderboardData.map((user, index) => (
+                                    <tr key={index} className="hover:bg-gray-100">
+                                        <td className="p-2 border-b">{index + 1}</td>
+                                        <td className="p-2 border-b">{user.name}</td>
+                                        <td className="p-2 border-b">{user.time}</td>
+                                        <td className="p-2 border-b">{user.move}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     );

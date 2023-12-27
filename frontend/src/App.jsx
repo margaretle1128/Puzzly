@@ -345,12 +345,15 @@ function App() {
             </div>
           </>
         ) : showLeaderboard ? (
-          <>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleReturnToMenu}>
-              Back to Main Menu
-            </button>
-            <LeaderBoard />
-          </>
+          <div className="w-10/12 pt-1.5 flex flex-col justify-center items-center">
+            <div className="leaderboard w-fit h-5/6 relative">
+              <button className="absolute top-0 left-0 text-black font-semibold text-7xl font-mono hover:scale-110" onClick={handleReturnToMenu}>
+                &lt;
+              </button>
+              <h1 className="text-6xl font-semibold flex justify-center items-center pt-3">Leaderboard</h1>
+              <LeaderBoard />
+            </div>
+          </div>
         ) : (
           <div className="game-div w-10/12 pt-1.5 flex justify-center items-center">
             <div className="game-board w-fit h-5/6">
@@ -435,18 +438,20 @@ function App() {
               </div>
               {showSolvedPopup && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
-                  <div className="solved-popup bg-white shadow-lg rounded-lg text-xl px-8 pt-6 pb-8 mb-4 flex flex-col items-center z-50">
-                    <p className="text-2xl font-semibold mb-4">Congratulations! You solved the puzzle.</p>
+                  <div className="solved-popup bg-white shadow-lg rounded-lg text-2xl px-8 pt-6 pb-8 mb-4 flex flex-col items-center z-50">
+                    <p className="text-4xl font-semibold mb-4">Congratulations! You solved the puzzle.</p>
                     <p className="mb-2">Time: {formatTime()}</p>
                     <p className="mb-4">Moves: {moveCount}</p>
                     <button 
-                      className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none"
+                      className="bg-blue-500 text-white font-bold px-6 py-2 rounded-md shadow-lg text-shadow
+                      hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none"
                       onClick={() => setShowSavePopup(true)}
                     >
                       Save Record
                     </button>
                     <button 
-                      className="mt-4 bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition duration-300 ease-in-out focus:outline-none"
+                      className="mt-4 bg-gray-500 text-white font-bold px-6 py-2 rounded-md shadow-lg text-shadow
+                      hover:bg-gray-700 transition duration-300 ease-in-out focus:outline-none"
                       onClick={() => {
                         setShowSolvedPopup(false);
                         setGameStarted(false);
@@ -459,8 +464,8 @@ function App() {
               )}
               {showSavePopup && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
-                  <div className="bg-white shadow-lg rounded-lg p-6 mb-4 flex flex-col items-center z-50">
-                    <h3 className="text-xl font-semibold mb-4">Enter your name to save the record</h3>
+                  <div className="bg-white text-2xl shadow-lg rounded-lg p-6 mb-4 flex flex-col items-center z-50">
+                    <h3 className="text-4xl font-semibold mb-4">Enter your name to save the record</h3>
                     <input
                       type="text"
                       placeholder="Enter your name"
@@ -470,13 +475,15 @@ function App() {
                     />
                     <div className="flex gap-4">
                       <button
-                        className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none"
+                        className="bg-blue-500 font-bold text-white px-6 py-2 rounded-md shadow-lg text-shadow
+                        hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none"
                         onClick={saveRecord}
                       >
                         Save
                       </button>
                       <button
-                        className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition duration-300 ease-in-out focus:outline-none"
+                        className="bg-gray-500 font-bold text-white px-6 py-2 rounded-md shadow-lg text-shadow
+                        hover:bg-gray-700 transition duration-300 ease-in-out focus:outline-none"
                         onClick={() => setShowSavePopup(false)}
                       >
                         Cancel

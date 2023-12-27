@@ -20,6 +20,9 @@ module.exports = {
         'modal': '#c2bcf8',
         'tile': '#b0d8da',
       },
+      height: {
+        '44rem': '44rem',
+      },
     },
   },
   plugins: [
