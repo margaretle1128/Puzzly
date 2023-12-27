@@ -3,7 +3,7 @@ import './App.css';
 import axios from "axios";
 import LeaderBoard from "./components/LeaderBoard";
 import Logo from "./assets/images/puzzle.png";
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 
 function App() {
   /*----------------------------- STATE VARIABLES -----------------------------*/
@@ -148,11 +148,11 @@ function App() {
         })
       );
   
+      setMoveCount(prevMoveCount => prevMoveCount + 1);
       setPuzzle(newPuzzle);
-  
       setTimeout(() => {
         finalizeTileMove(rowIndex, tileIndex, emptyTilePos);
-      }, 300); // Duration should match your CSS transition
+      }, 300); 
     }
   };
   
@@ -236,11 +236,27 @@ function App() {
         size: boardSize,
         difficulty: difficulty
       });
-      swal("Success!", "Your record has been saved.", "success");
+      swal.fire({
+        title: "Success!",
+        text: "Your record has been saved.",
+        icon: "success",
+        customClass: {
+          title: 'custom-swal-font',
+          htmlContainer: 'custom-swal-font'
+        }
+      });
       setShowSavePopup(false);
       setGameStarted(false);
     } catch (error) {
-      swal("Oops!", "There was an error saving your record.", "error");
+      swal.fire({
+        title: "Oops!",
+        text: "There was an error saving your record.",
+        icon: "error",
+        customClass: {
+          title: 'custom-swal-font',
+          htmlContainer: 'custom-swal-font'
+        }
+      });
     }
   };
 

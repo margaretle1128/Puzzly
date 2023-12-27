@@ -19,3 +19,6 @@
   background: #686767;
 }
   
+.swal2-html-container.custom-swal-font {
+  font-family: 'Indie Flower', sans-serif; 
+}
