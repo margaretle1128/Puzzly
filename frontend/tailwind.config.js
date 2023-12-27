@@ -28,6 +28,18 @@ module.exports = {
         '.text-shadow': {
           textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
         },
+        '.scrollbar-w-2': {
+          scrollbarWidth: 'thin',
+        },
+        '.scrollbar-track-gray-200': {
+          'scrollbar-color': 'gray-200',
+        },
+        '.scrollbar-thumb-rounded': {
+          'scrollbar-color': 'rounded',
+        },
+        '.scrollbar-thumb-gray-400': {
+          'scrollbar-color': 'gray-400',
+        },
       };
       addUtilities(newUtilities, ['responsive', 'hover']);
     }

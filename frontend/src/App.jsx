@@ -149,6 +149,7 @@ function App() {
       if (isSolved(newPuzzle) && !isPuzzleSolved) {
         setShowSolvedPopup(true);
         setIsTimerActive(false);
+        setIsPuzzleSolved(true);
       }
     }
   };
@@ -210,6 +211,7 @@ function App() {
       setIsPuzzleSolved(true);
       setShowSolvedPopup(false); 
       setShowConfirmation(false);
+      setHints([]);
     } catch (error) {
       console.error("Error solving puzzle: ", error);
     }
@@ -242,6 +244,23 @@ function App() {
     }
   };  
 
+  /*----------------------------- MAP DIRECTION -----------------------------*/
+  const mapDirection = (steps) => {
+    const directionMap = {
+      'L': 'Left',
+      'R': 'Right',
+      'U': 'Up',
+      'D': 'Down'
+    };
+    
+    return steps.split(' ').map(step => {
+      if (!isNaN(step)) {
+        return step;
+      }
+      return directionMap[step] || step;
+    }).join(' '); 
+  }; 
+  
   return (
     <div className="min-h-screen bg-black flex flex-col justify-center items-center">
       <div className="App max-w-6xl xl:min-w-64rem min-w-0 xl:w-2/5 w-full 
@@ -332,7 +351,7 @@ function App() {
           </>
         ) : (
           <div className="game-div w-10/12 pt-1.5 flex justify-center items-center">
-            <div className="game-board w-fit">
+            <div className="game-board w-fit h-5/6">
               <div className="flex flex-row justify-between h-24 mb-3">
                 <button className="text-white flex flex-start font-semibold text-7xl font-mono hover:scale-110" onClick={handleReturnToMenu}>
                   &lt;
@@ -373,7 +392,7 @@ function App() {
               <div className={`rounded-2xl p-1 text-white text-2xl flex flex-row justify-between items-center w-full gap-4`}>
                 <button
                   className="hint-button text-shadow font-bold text-3xl w-1/2 bg-green-500 py-4 rounded-xl
-                  hover:scale-110 transition duration-300 ease-in-out focus:outline-none"
+                  hover:scale-110 transition duration-300 ease-in-out focus:outline-none shadow-lg"
                   onClick={handleRequestHint}
                   disabled={remainingHints <= 0 || isPuzzleSolved}
                 >
@@ -381,20 +400,37 @@ function App() {
                 </button>
                 <button
                     className="solve-button text-shadow font-bold text-3xl w-1/2 bg-green-500 py-4 rounded-xl
-                    hover:scale-110 transition duration-300 ease-in-out focus:outline-none"
+                    hover:scale-110 transition duration-300 ease-in-out focus:outline-none shadow-lg"
                     onClick={handleSolvePuzzle}
                     disabled={isPuzzleSolved}
                   >
                     Solve
                 </button>
               </div>
-                <div className="hint-section">
-                    <div className="hints text-3xl">
+              <div className="w-full p-1 py-3">
+                {solution.length > 0 && (
+                  <div className="solution-container bg-white rounded-xl p-4 text-2xl max-h-96">
+                    <div className="solution max-h-80 overflow-auto scrollbar-w-2 scrollbar-track-gray-200 scrollbar-thumb-rounded scrollbar-thumb-gray-400">
+                      <h3 className="font-bold">Solution Steps:</h3>
+                      <ul>
+                        {solution.map((step, index) => (
+                          <li key={index}>{mapDirection(step)}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+                {hints.length > 0 && (
+                  <div className="hint-section bg-white rounded-xl p-4">
+                    <div className="hints text-2xl">
+                      <h3 className="font-bold">Hint:</h3>
                       {hints.map((hint, index) => (
-                        <div key={index}>{hint}</div>
+                        <div key={index}>{mapDirection(hint)}</div>
                       ))}
                     </div>
-                </div>
+                  </div>
+                  )}
+              </div>
               {showSolvedPopup && (
                 <div className="solved-popup bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
                   <p>Congratulations! You solved the puzzle.</p>
@@ -417,16 +453,6 @@ function App() {
                   />
                   <button onClick={saveRecord}>Save</button>
                   <button onClick={() => setShowSavePopup(false)}>Cancel</button>
-                </div>
-              )}
-              {solution.length > 0 && (
-                <div className="solution">
-                  <h3>Solution Steps:</h3>
-                  <ul>
-                    {solution.map((step, index) => (
-                      <li key={index}>{step}</li>
-                    ))}
-                  </ul>
                 </div>
               )}
             </div>
