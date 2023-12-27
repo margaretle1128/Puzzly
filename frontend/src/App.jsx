@@ -3,6 +3,7 @@ import './App.css';
 import axios from "axios";
 import LeaderBoard from "./components/LeaderBoard";
 import Logo from "./assets/images/puzzle.png";
+import swal from 'sweetalert';
 
 function App() {
   /*----------------------------- STATE VARIABLES -----------------------------*/
@@ -188,13 +189,14 @@ function App() {
         name: userName,
         move: moveCount,
         time: timer,
-        size: boardSize
+        size: boardSize,
+        difficulty: difficulty
       });
-      alert('Record saved successfully');
+      swal("Success!", "Your record has been saved.", "success");
       setShowSavePopup(false);
       setGameStarted(false);
     } catch (error) {
-      console.error('Error saving record: ', error);
+      swal("Oops!", "There was an error saving your record.", "error");
     }
   };
 
@@ -234,7 +236,7 @@ function App() {
   /*----------------------------- UI SECTION -----------------------------*/
   const getWidthClassRight = () => {
     if (boardSize === 3) {
-      return "w-8/12";
+      return "w-10/12";
     } else if (boardSize === 4) {
       return "w-3/5";
     } else if (boardSize === 5){
@@ -391,7 +393,7 @@ function App() {
               ))}
               <div className={`rounded-2xl p-1 text-white text-2xl flex flex-row justify-between items-center w-full gap-4`}>
                 <button
-                  className="hint-button text-shadow font-bold text-3xl w-1/2 bg-green-500 py-4 rounded-xl
+                  className="hint-button text-shadow font-bold text-2xl w-1/2 bg-green-500 py-4 rounded-xl
                   hover:scale-110 transition duration-300 ease-in-out focus:outline-none shadow-lg"
                   onClick={handleRequestHint}
                   disabled={remainingHints <= 0 || isPuzzleSolved}
@@ -399,7 +401,7 @@ function App() {
                   Hint ({remainingHints} left)
                 </button>
                 <button
-                    className="solve-button text-shadow font-bold text-3xl w-1/2 bg-green-500 py-4 rounded-xl
+                    className="solve-button text-shadow font-bold text-2xl w-1/2 bg-green-500 py-4 rounded-xl
                     hover:scale-110 transition duration-300 ease-in-out focus:outline-none shadow-lg"
                     onClick={handleSolvePuzzle}
                     disabled={isPuzzleSolved}
@@ -432,27 +434,55 @@ function App() {
                   )}
               </div>
               {showSolvedPopup && (
-                <div className="solved-popup bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center">
-                  <p>Congratulations! You solved the puzzle.</p>
-                  <p>Time: {formatTime()}</p>
-                  <p>Moves: {moveCount}</p>
-                  <button onClick={() => setShowSavePopup(true)}>Save Record</button>
-                  <button onClick={() => {
-                    setShowSolvedPopup(false);
-                    setGameStarted(false);
-                  }}>Close</button>
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
+                  <div className="solved-popup bg-white shadow-lg rounded-lg text-xl px-8 pt-6 pb-8 mb-4 flex flex-col items-center z-50">
+                    <p className="text-2xl font-semibold mb-4">Congratulations! You solved the puzzle.</p>
+                    <p className="mb-2">Time: {formatTime()}</p>
+                    <p className="mb-4">Moves: {moveCount}</p>
+                    <button 
+                      className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none"
+                      onClick={() => setShowSavePopup(true)}
+                    >
+                      Save Record
+                    </button>
+                    <button 
+                      className="mt-4 bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition duration-300 ease-in-out focus:outline-none"
+                      onClick={() => {
+                        setShowSolvedPopup(false);
+                        setGameStarted(false);
+                      }}
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
               )}
               {showSavePopup && (
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Enter your name"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                  />
-                  <button onClick={saveRecord}>Save</button>
-                  <button onClick={() => setShowSavePopup(false)}>Cancel</button>
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center">
+                  <div className="bg-white shadow-lg rounded-lg p-6 mb-4 flex flex-col items-center z-50">
+                    <h3 className="text-xl font-semibold mb-4">Enter your name to save the record</h3>
+                    <input
+                      type="text"
+                      placeholder="Enter your name"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="text-center p-2 mb-4 border rounded"
+                    />
+                    <div className="flex gap-4">
+                      <button
+                        className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none"
+                        onClick={saveRecord}
+                      >
+                        Save
+                      </button>
+                      <button
+                        className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition duration-300 ease-in-out focus:outline-none"
+                        onClick={() => setShowSavePopup(false)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

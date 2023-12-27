@@ -36,14 +36,14 @@ public class UsersController {
     }
     
     List<User> users = Arrays.asList(
-        new User("Alice", 10, 120, 4),
-        new User("Bob", 15, 180, 5),
-        new User("Charlie", 20, 200, 6)
+        new User("Alice", 10, 120, 4, "Easy"),
+        new User("Bob", 15, 180, 5, "Medium"),
+        new User("Charlie", 20, 200, 6, "Hard")
     );
 
     @GetMapping("/users/leaderboard")
-    public ResponseEntity<List<User>> getLeaderboardBySize(@RequestParam int size) {
-        List<User> leaderboard = userRepo.findBySizeOrderByTimeAscMoveAsc(size);
+    public ResponseEntity<List<User>> getLeaderboard(@RequestParam int size, @RequestParam String difficulty) {
+        List<User> leaderboard = userRepo.findBySizeAndDifficultyOrderByTimeAscMoveAsc(size, difficulty);
         return ResponseEntity.ok(leaderboard);
     }
 

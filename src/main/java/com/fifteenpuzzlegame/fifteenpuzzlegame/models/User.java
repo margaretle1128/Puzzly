@@ -12,16 +12,18 @@ public class User {
     private int move;
     private int time;
     private int size;
-    
+    private String difficulty;
+
     public User() {
 
     }
 
-    public User(String name, int move, int time, int size) {
+    public User(String name, int move, int time, int size, String difficulty) {
         this.name = name;
         this.move = move;
         this.time = time;
         this.size = size;
+        this.difficulty = difficulty;
     }
 
     public String getName() {
@@ -62,5 +64,13 @@ public class User {
 
     public void setUid(int uid) {
         this.uid = uid;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
     }
 }

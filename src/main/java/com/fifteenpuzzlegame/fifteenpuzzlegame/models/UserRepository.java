@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    List<User> findBySizeOrderByTimeAscMoveAsc(int size);
+    List<User> findBySizeAndDifficultyOrderByTimeAscMoveAsc(int size, String difficulty);
 }
