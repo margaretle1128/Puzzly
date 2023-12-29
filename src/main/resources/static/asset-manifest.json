@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.dd430d08.css",
+    "main.js": "/static/js/main.094387fd.js",
+    "static/js/787.9e9f4ffd.chunk.js": "/static/js/787.9e9f4ffd.chunk.js",
+    "static/media/puzzle.png": "/static/media/puzzle.ac7ca4da09107156e527.png",
+    "static/media/daisy.jpg": "/static/media/daisy.c1fd55618be59c5cdbae.jpg",
+    "index.html": "/index.html",
+    "main.dd430d08.css.map": "/static/css/main.dd430d08.css.map",
+    "main.094387fd.js.map": "/static/js/main.094387fd.js.map",
+    "787.9e9f4ffd.chunk.js.map": "/static/js/787.9e9f4ffd.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.dd430d08.css",
+    "static/js/main.094387fd.js"
+  ]
+}

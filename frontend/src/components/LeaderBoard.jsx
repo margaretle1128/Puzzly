@@ -10,7 +10,7 @@ function LeaderBoard() {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const response = await axios.get(`http://localhost:8084/api/v1/users/leaderboard?size=${selectedSize}&difficulty=${selectedDifficulty}`);
+                const response = await axios.get(`/api/v1/users/leaderboard?size=${selectedSize}&difficulty=${selectedDifficulty}`);
                 setLeaderboardData(response.data);
             } catch (error) {
                 console.error("Error fetching leaderboard data: ", error);

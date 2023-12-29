@@ -28,20 +28,6 @@ function App() {
   const [isPuzzleSolved, setIsPuzzleSolved] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
-  // Fetch initial data
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const { data } = await axios.get("http://localhost:8084/api/v1/users/samples");
-        setSampleJson(data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    getData();
-  }, []);
-
   /*----------------------------- HANDLERS FOR GAME ACTIONS -----------------------------*/
   const handleNewGameClick = () => {
     setShowSolvedPopup(false);
@@ -83,7 +69,7 @@ function App() {
     setBoardSize(size);
     setShowModal(false);
     try {
-      const { data: newPuzzle } = await axios.get(`http://localhost:8084/api/v1/puzzle/new?size=${size}&difficulty=${difficulty}`);
+      const { data: newPuzzle } = await axios.get(`/api/v1/puzzle/new?size=${size}&difficulty=${difficulty}`);
       setPuzzle(newPuzzle);
       setTimer(0);
       setMoveCount(0);
@@ -229,7 +215,7 @@ function App() {
   /*----------------------------- SAVE RECORD -----------------------------*/
   const saveRecord = async () => {
     try {
-      await axios.post('http://localhost:8084/api/v1/users/add', {
+      await axios.post('/api/v1/users/add', {
         name: userName,
         move: moveCount,
         time: timer,
@@ -267,7 +253,7 @@ function App() {
 
   const confirmSolvePuzzle = async () => {
     try {
-      const response = await axios.post('http://localhost:8084/api/v1/puzzle/solve', puzzle);
+      const response = await axios.post('/api/v1/puzzle/solve', puzzle);
       setSolution(response.data);
       setIsTimerActive(false);
       setIsPuzzleSolved(true);
@@ -283,7 +269,7 @@ function App() {
   const handleRequestHint = async () => {
     if (remainingHints > 0 && gameStarted) {
       try {
-        const response = await axios.post('http://localhost:8084/api/v1/puzzle/hint', { board: puzzle, difficulty });
+        const response = await axios.post('/api/v1/puzzle/hint', { board: puzzle, difficulty });
         // Replace the existing hints with the new hints
         setHints(response.data);
         setRemainingHints(remainingHints - 1);
